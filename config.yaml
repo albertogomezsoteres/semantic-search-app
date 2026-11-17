@@ -9,6 +9,11 @@ source:
 # (competition_id, season_id) pairs, checked against data/competitions.json at that commit.
 competitions:
   - { competition_id: 43, season_id: 106 }  # FIFA World Cup 2022
+  - { competition_id: 43, season_id: 3 }    # FIFA World Cup 2018
+  - { competition_id: 55, season_id: 282 }  # UEFA Euro 2024
+  - { competition_id: 55, season_id: 43 }   # UEFA Euro 2020
+  - { competition_id: 72, season_id: 107 }  # Women's World Cup 2023
+  - { competition_id: 72, season_id: 30 }   # Women's World Cup 2019
 
 paths:
   raw: data/raw

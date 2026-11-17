@@ -1,0 +1,67 @@
+{
+  "built_at": "2026-11-17T20:16:40+00:00",
+  "collection": "shots",
+  "source": {
+    "repo": "statsbomb/open-data",
+    "commit": "4b73468fc5b0f1950f9f66fada70ad3a4f9327cb"
+  },
+  "competitions": [
+    [
+      43,
+      106
+    ],
+    [
+      43,
+      3
+    ],
+    [
+      55,
+      282
+    ],
+    [
+      55,
+      43
+    ],
+    [
+      72,
+      107
+    ],
+    [
+      72,
+      30
+    ]
+  ],
+  "tournaments": [
+    "FIFA World Cup 2018",
+    "FIFA World Cup 2022",
+    "UEFA Euro 2020",
+    "UEFA Euro 2024",
+    "Women's World Cup 2019",
+    "Women's World Cup 2023"
+  ],
+  "rows": 8821,
+  "goals": 858,
+  "matches": 346,
+  "content_sha256": "0029e033edf3692ebcfb696fd129e30d0684af6ebfc202fcfed4ce15597a4eba",
+  "template": "moment",
+  "distance": "cosine",
+  "embedding": {
+    "model": "intfloat/e5-small-v2",
+    "revision": "ffb93f3bd4047442299a41ebb6fa998a38507c52",
+    "dim": 384,
+    "query_prefix": "query: ",
+    "passage_prefix": "passage: ",
+    "normalized": true
+  },
+  "rerank": {
+    "model": "cross-encoder/ms-marco-MiniLM-L6-v2",
+    "revision": "233902d25c440f23af6f7d6e94d2946bac0bee0a",
+    "fetch_k": 50
+  },
+  "versions": {
+    "python": "3.11.16",
+    "chromadb": "1.5.9",
+    "sentence-transformers": "6.3.0",
+    "torch": "2.15.0"
+  }
+}

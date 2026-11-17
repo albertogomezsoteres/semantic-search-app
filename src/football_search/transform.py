@@ -23,6 +23,7 @@ from football_search.config import Config, configure_logging, load_config
 log = logging.getLogger(__name__)
 
 # StatsBomb pitch: 120 x 80 yards, every team attacks toward x = 120.
+PITCH_LENGTH, PITCH_WIDTH = 120.0, 80.0
 GOAL_X, GOAL_Y = 120.0, 40.0
 GOAL_HALF_WIDTH = 4.0  # posts at y = 36 and y = 44
 SHOOTOUT_PERIOD = 5
@@ -253,6 +254,8 @@ def describe_assist(row: dict[str, Any]) -> str:
 def where_phrase(row: dict[str, Any]) -> str:
     if row["shot_type"] == "Penalty":
         return "from the penalty spot"
+    if row["shot_type"] == "Corner":
+        return "from the corner flag"
     return f"{ZONE_PHRASES[row['zone']]}, about {round(row['distance'])} yards out"
 
 
@@ -421,7 +424,9 @@ def shots_from_events(
         shot = e["shot"]
         team = e["team"]["name"]
         opponent = ctx["away"] if team == ctx["home"] else ctx["home"]
-        x, y = e["location"][:2]
+        # Corner kicks are sometimes recorded just past the byline; clamp onto the pitch.
+        x = min(max(float(e["location"][0]), 0.0), PITCH_LENGTH)
+        y = min(max(float(e["location"][1]), 0.0), PITCH_WIDTH)
         end = shot.get("end_location", [])
         key_pass = passes.get(shot.get("key_pass_id"))
         is_goal = shot["outcome"]["name"] == "Goal"
