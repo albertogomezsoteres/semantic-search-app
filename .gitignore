@@ -1,0 +1,26 @@
+# Data (rebuilt with `make data`)
+data/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+*.ipynb_checkpoints
+
+# Secrets
+.env
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Local tooling and working notes
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+week13_semantic_search_activity.md
+semantic_search_starter_notebook.ipynb
