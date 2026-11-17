@@ -1,0 +1,45 @@
+# Single source of truth for the pipeline and the app.
+
+source:
+  # StatsBomb Open Data, pinned to one commit so the raw data never changes under us.
+  repo: statsbomb/open-data
+  commit: 4b73468fc5b0f1950f9f66fada70ad3a4f9327cb
+  request_delay_s: 0.2
+
+# (competition_id, season_id) pairs, checked against data/competitions.json at that commit.
+competitions:
+  - { competition_id: 43, season_id: 106 }  # FIFA World Cup 2022
+
+paths:
+  raw: data/raw
+  staged: data/staged
+  chroma: chromadb
+  reports: reports
+  eval_queries: eval/queries.yaml
+
+index:
+  collection: shots
+  batch_size: 256
+  template: fluent        # fluent | terse
+  distance: cosine
+
+embedding:
+  # Model used for the deployed index. Chosen from the evaluation in reports/.
+  model: sentence-transformers/all-MiniLM-L6-v2
+  candidates:
+    - name: sentence-transformers/all-MiniLM-L6-v2
+      revision: 1110a243fdf4706b3f48f1d95db1a4f5529b4d41
+      query_prefix: ""
+      passage_prefix: ""
+    - name: BAAI/bge-small-en-v1.5
+      revision: 5c38ec7c405ec4b44b94cc5a9bb96e735b38267a
+      query_prefix: "Represent this sentence for searching relevant passages: "
+      passage_prefix: ""
+    - name: intfloat/e5-small-v2
+      revision: ffb93f3bd4047442299a41ebb6fa998a38507c52
+      query_prefix: "query: "
+      passage_prefix: "passage: "
+
+search:
+  top_k: 10
+  max_top_k: 50
