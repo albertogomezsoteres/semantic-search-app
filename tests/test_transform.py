@@ -72,3 +72,12 @@ def test_terse_text(shot_rows):
     text = render_terse(by_id(shot_rows)["s-3"])
     assert "Goal" in text and "Volley" in text and "rebound" in text
     assert text.count(" | ") >= 8
+
+
+def test_moment_text_leaves_out_match_context(shot_rows):
+    from football_search.transform import render_moment
+
+    text = render_moment(by_id(shot_rows)["s-1"])
+    assert "Alex Red (Redland) scored with a header" in text
+    assert "FIFA" not in text and "minute" not in text and "1-0" not in text
+    assert "It happened early in the first half." in text

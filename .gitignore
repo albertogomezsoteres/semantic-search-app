@@ -24,3 +24,6 @@ CLAUDE.local.md
 .claude/
 week13_semantic_search_activity.md
 semantic_search_starter_notebook.ipynb
+
+# Vector index: committed through Git LFS at deploy time
+chromadb/

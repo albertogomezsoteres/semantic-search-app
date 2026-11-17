@@ -46,6 +46,10 @@ class Config:
     distance: str
     model: ModelSpec
     candidates: tuple[ModelSpec, ...]
+    reranker: ModelSpec | None
+    rerank_candidates: tuple[ModelSpec, ...]
+    fetch_k: int
+    latency_budget_ms: float
     top_k: int
     max_top_k: int
 
@@ -63,11 +67,11 @@ class Config:
         return self.staged_dir / "matches.parquet"
 
     def model_spec(self, name: str) -> ModelSpec:
-        """Return the candidate spec for a model name."""
-        for spec in self.candidates:
+        """Return the candidate spec for an embedding or reranker model name."""
+        for spec in (*self.candidates, *self.rerank_candidates):
             if spec.name == name:
                 return spec
-        raise KeyError(f"Model {name!r} is not listed under embedding.candidates")
+        raise KeyError(f"Model {name!r} is not listed under embedding or rerank candidates")
 
 
 def load_config(path: Path | str = DEFAULT_CONFIG) -> Config:
@@ -81,6 +85,15 @@ def load_config(path: Path | str = DEFAULT_CONFIG) -> Config:
     model_name = raw["embedding"]["model"]
     if model_name not in by_name:
         raise ValueError(f"embedding.model {model_name!r} must be one of the candidates")
+
+    rerank_candidates = tuple(ModelSpec(**c) for c in raw["rerank"]["candidates"])
+    rerank_name = raw["rerank"]["model"]
+    reranker = None
+    if rerank_name != "none":
+        matches = [c for c in rerank_candidates if c.name == rerank_name]
+        if not matches:
+            raise ValueError(f"rerank.model {rerank_name!r} must be 'none' or a candidate")
+        reranker = matches[0]
 
     paths = raw["paths"]
     return Config(
@@ -101,6 +114,10 @@ def load_config(path: Path | str = DEFAULT_CONFIG) -> Config:
         distance=raw["index"]["distance"],
         model=by_name[model_name],
         candidates=candidates,
+        reranker=reranker,
+        rerank_candidates=rerank_candidates,
+        fetch_k=int(raw["rerank"]["fetch_k"]),
+        latency_budget_ms=float(raw["evaluation"]["latency_budget_ms"]),
         top_k=int(raw["search"]["top_k"]),
         max_top_k=int(raw["search"]["max_top_k"]),
     )

@@ -15,7 +15,18 @@ from football_search.config import Config, configure_logging, load_config
 
 log = logging.getLogger(__name__)
 
-REQUIRED = ["id", "match_id", "player", "team", "outcome", "x", "y", "text_fluent", "text_terse"]
+REQUIRED = [
+    "id",
+    "match_id",
+    "player",
+    "team",
+    "outcome",
+    "x",
+    "y",
+    "text_fluent",
+    "text_moment",
+    "text_terse",
+]
 # Plausible shots per match; a tournament outside this range means something went wrong.
 SHOTS_PER_MATCH = (10, 45)
 MAX_WORDS = 200
