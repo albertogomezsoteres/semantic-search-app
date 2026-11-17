@@ -37,15 +37,15 @@ SHOTS = pd.DataFrame(SEARCHER.collection.get(include=["metadatas"])["metadatas"]
 TOURNAMENTS = sorted(SHOTS["tournament"].unique())
 TEAMS = sorted(SHOTS["team"].unique())
 
+# (query, goals only). Goal examples switch on the filter: embeddings find the right kind
+# of shot well but are weaker at telling scored from missed, which is what filters are for.
 EXAMPLES = [
-    "long-range screamer into the top corner",
-    "headed goal from a corner",
-    "first-time volley after a cross",
-    "penalty saved by the goalkeeper",
-    "counter-attack goal in the last minutes",
-    "chip over the goalkeeper",
-    "big chance missed from close range",
-    "Messi penalty in the final",
+    ["penalty saved by the goalkeeper", False],
+    ["headed goal from a corner", True],
+    ["long-range shot into the top corner", True],
+    ["first-time volley after a cross", True],
+    ["chip over the goalkeeper", True],
+    ["Messi penalty in the final", False],
 ]
 
 OUTCOME_STYLE = {
@@ -182,11 +182,10 @@ with gr.Blocks(title="Football Moments Search") as demo:
             query = gr.Textbox(
                 label="What are you looking for?",
                 placeholder="e.g. headed goal from a corner in extra time",
-                value=EXAMPLES[0],
+                value=EXAMPLES[0][0],
                 scale=5,
             )
             button = gr.Button("Search", variant="primary", scale=1)
-        gr.Examples(EXAMPLES, inputs=query, label="Try an example")
         with gr.Accordion("Filters", open=False):
             with gr.Row():
                 tournaments = gr.Dropdown(TOURNAMENTS, multiselect=True, label="Tournament")
@@ -195,6 +194,7 @@ with gr.Blocks(title="Football Moments Search") as demo:
                 goals_only = gr.Checkbox(label="Goals only")
                 min_xg = gr.Slider(0, 1, value=0, step=0.05, label="Minimum xG")
                 top_k = gr.Slider(1, CFG.max_top_k, value=CFG.top_k, step=1, label="Results")
+        gr.Examples(EXAMPLES, inputs=[query, goals_only], label="Try an example")
         with gr.Row():
             with gr.Column(scale=3):
                 results_html = gr.HTML()
