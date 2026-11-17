@@ -26,3 +26,8 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-q"
+
+[tool.ruff.lint.isort]
+# The chromadb/ index folder in the repo root is data, not our package.
+known-third-party = ["chromadb"]
+known-first-party = ["football_search"]
