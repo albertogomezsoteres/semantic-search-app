@@ -27,6 +27,18 @@ from football_search import stats  # noqa: E402
 from football_search.config import configure_logging, load_config  # noqa: E402
 from football_search.search import Filters, Result, Searcher, load_manifest  # noqa: E402
 
+try:
+    import spaces  # only installed on Hugging Face Spaces
+except ImportError:
+    spaces = None
+
+if spaces is not None:
+    # ZeroGPU needs one @spaces.GPU function to start; it is never called, so search stays on CPU.
+    @spaces.GPU
+    def _zerogpu_placeholder() -> None:
+        pass
+
+
 configure_logging()
 log = logging.getLogger("app")
 
