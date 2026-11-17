@@ -1,0 +1,10 @@
+[
+  {"team_name": "Redland", "lineup": [
+    {"player_id": 1, "player_name": "Alex Full Surname Red", "player_nickname": "Alex Red"},
+    {"player_id": 2, "player_name": "Sam Cross", "player_nickname": null}
+  ]},
+  {"team_name": "Blueland", "lineup": [
+    {"player_id": 3, "player_name": "Jo Blue", "player_nickname": null},
+    {"player_id": 4, "player_name": "Kim Keeper", "player_nickname": null}
+  ]}
+]
