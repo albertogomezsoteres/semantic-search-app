@@ -1,4 +1,6 @@
 # Runtime dependencies (installed by the Hugging Face Space).
+# CPU-only torch: the Space has no GPU, and the CPU wheel is far smaller.
+--extra-index-url https://download.pytorch.org/whl/cpu
 # chromadb must match the version that built the index in chromadb/.
 chromadb==1.5.9
 duckdb==2.0.0

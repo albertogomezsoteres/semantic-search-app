@@ -81,3 +81,14 @@ def test_moment_text_leaves_out_match_context(shot_rows):
     assert "Alex Red (Redland) scored with a header" in text
     assert "FIFA" not in text and "minute" not in text and "1-0" not in text
     assert "It happened early in the first half." in text
+
+
+def test_corner_kick_location_is_clamped(events, match):
+    from football_search.transform import render_fluent, shots_from_events
+
+    shot = next(e for e in events if e["id"] == "s-2")
+    olimpico = {**shot, "id": "s-9", "index": 99, "location": [120.5, 79.6],
+                "shot": {**shot["shot"], "type": {"name": "Corner"}}}  # fmt: skip
+    row = shots_from_events([olimpico], match)[0]
+    assert (row["x"], row["y"]) == (120.0, 79.6)
+    assert "from the corner flag" in render_fluent(row)
