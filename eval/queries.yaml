@@ -1,0 +1,176 @@
+# Retrieval test set. Each query is written the way a fan might type it, avoiding the
+# exact wording of the text templates, so the test is not circular.
+# `relevant` is a rule over shot metadata; every shot that matches it counts as a
+# correct answer. Rule values: a scalar means equals, a list means "one of",
+# and {gte: n} / {lte: n} / {ne: v} are comparisons.
+#
+# dev:  used to compare and tune models and templates.
+# test: written before any tuning and only used for the final numbers, so they are
+#       not inflated by choices made while looking at the dev results.
+
+dev:
+  - query: "nodded in from a corner"
+    relevant: { is_goal: true, body_part: Head, play_pattern: From Corner }
+
+  - query: "spot kick that the keeper stopped"
+    relevant: { shot_type: Penalty, outcome: [Saved, Saved to Post] }
+
+  - query: "screamer from way outside the area that went in"
+    relevant: { is_goal: true, zone: long_range }
+
+  - query: "cheeky lob over the goalie"
+    relevant: { technique: Lob }
+
+  - query: "bicycle kick attempt"
+    relevant: { technique: Overhead Kick }
+
+  - query: "volleyed home after a ball into the box from the wing"
+    relevant: { is_goal: true, technique: [Volley, Half Volley], assist_type: [cross, cut_back] }
+
+  - query: "headed goal during the extra thirty minutes"
+    relevant: { is_goal: true, body_part: Head, period: [3, 4] }
+
+  - query: "fast break goal in the closing minutes"
+    relevant: { is_goal: true, play_pattern: From Counter, game_state: [late, stoppage_time, late_extra_time] }
+
+  - query: "unbelievable miss from a few yards out"
+    relevant: { is_goal: false, xg: { gte: 0.3 }, shot_type: Open Play }
+
+  - query: "shot rattled the crossbar"
+    relevant: { outcome: [Post, Saved to Post] }
+
+  - query: "player failed to convert in the shootout"
+    relevant: { is_shootout: true, outcome: { ne: Goal } }
+
+  - query: "curled a set piece straight in"
+    relevant: { is_goal: true, shot_type: Free Kick }
+
+  - query: "late leveller to rescue a draw"
+    relevant: { goal_context: equaliser, game_state: [late, stoppage_time, late_extra_time] }
+
+  - query: "last-gasp match winner in added time"
+    relevant: { goal_context: [winning goal, opening goal and eventual winner], game_state: [stoppage_time, late_extra_time] }
+
+  - query: "followed up and tucked it in after the keeper parried"
+    relevant: { is_goal: true, rebound: true }
+
+  - query: "slotted home after a defence-splitting pass"
+    relevant: { is_goal: true, assist_type: through_ball }
+
+  - query: "finish from a pull-back from the byline"
+    relevant: { is_goal: true, assist_type: cut_back }
+
+  - query: "flying header"
+    relevant: { technique: Diving Header }
+
+  - query: "flick with the heel"
+    relevant: { technique: Backheel }
+
+  - query: "volley from distance"
+    relevant: { technique: [Volley, Half Volley], zone: [long_range, edge_of_box] }
+
+  - query: "goalkeeper wins the one against one duel"
+    relevant: { one_on_one: true, outcome: [Saved, Saved to Post, Saved Off Target] }
+
+  - query: "early goal in the opening minutes"
+    relevant: { is_goal: true, game_state: early }
+
+  - query: "left foot rocket from range into the net"
+    relevant: { is_goal: true, body_part: Left Foot, zone: [long_range, edge_of_box] }
+
+  - query: "bundled in off the chest or knee"
+    relevant: { body_part: Other }
+
+  - query: "goal that cut the deficit"
+    relevant: { goal_context: goal that pulled one back }
+
+  - query: "skied effort nowhere near the goal"
+    relevant: { outcome: Wayward }
+
+  - query: "rolled into an empty net"
+    relevant: { open_goal: true }
+
+  - query: "converted penalty during normal play"
+    relevant: { shot_type: Penalty, is_goal: true, is_shootout: false }
+
+  - query: "header from a free-kick delivery that went in"
+    relevant: { is_goal: true, body_part: Head, assist_type: free_kick }
+
+  - query: "goal in the tournament final"
+    relevant: { is_goal: true, stage: Final }
+
+  - query: "shot off target from long distance under pressure"
+    relevant: { outcome: [Off T, Wayward], zone: long_range, under_pressure: true }
+
+  - query: "goal straight after a throw-in"
+    relevant: { is_goal: true, assist_type: throw_in }
+
+  - query: "Messi spot kick"
+    relevant: { player: Lionel Messi, shot_type: Penalty }
+
+test:
+  - query: "towering header that hit the back of the net"
+    relevant: { is_goal: true, body_part: Head }
+
+  - query: "penalty blazed over or wide"
+    relevant: { shot_type: Penalty, outcome: [Off T, Wayward, Post] }
+
+  - query: "keeper saves a long-distance drive"
+    relevant: { outcome: [Saved, Saved to Post, Saved Off Target], zone: long_range }
+
+  - query: "tap-in from right in front of goal"
+    relevant: { is_goal: true, zone: six_yard_box }
+
+  - query: "goal to make it all square"
+    relevant: { goal_context: equaliser }
+
+  - query: "breakaway goal after winning the ball back"
+    relevant: { is_goal: true, play_pattern: From Counter }
+
+  - query: "half-volley charged down by a defender"
+    relevant: { technique: Half Volley, outcome: Blocked }
+
+  - query: "dead-ball strike kept out by the keeper"
+    relevant: { shot_type: Free Kick, outcome: [Saved, Saved to Post, Saved Off Target] }
+
+  - query: "goal from a ball whipped in from the flank"
+    relevant: { is_goal: true, assist_type: cross }
+
+  - query: "header that hit the frame of the goal"
+    relevant: { body_part: Head, outcome: [Post, Saved to Post] }
+
+  - query: "goal just before half-time"
+    relevant: { is_goal: true, game_state: first_half_stoppage }
+
+  - query: "goal that made it a two-goal cushion or more"
+    relevant: { goal_context: goal that extended the lead }
+
+  - query: "successful kick in the shootout"
+    relevant: { is_shootout: true, is_goal: true }
+
+  - query: "attempt after a corner routine that the keeper held"
+    relevant: { play_pattern: From Corner, outcome: [Saved, Saved to Post, Saved Off Target] }
+
+  - query: "glorious heading chance wasted"
+    relevant: { is_goal: false, body_part: Head, xg: { gte: 0.3 } }
+
+  - query: "shot after beating a man with a dribble"
+    relevant: { follows_dribble: true }
+
+  - query: "shot took a nick off a defender and went in"
+    relevant: { is_goal: true, deflected: true }
+
+  - query: "volley that the goalkeeper kept out"
+    relevant: { technique: [Volley, Half Volley], outcome: [Saved, Saved to Post, Saved Off Target] }
+
+  - query: "right-footer from just outside the area into the bottom corner"
+    relevant: { is_goal: true, body_part: Right Foot, zone: edge_of_box, placement: bottom corner }
+
+  - query: "goal scored in the extra period"
+    relevant: { is_goal: true, period: [3, 4] }
+
+  - query: "Mbappé scoring in the final"
+    relevant: { player: Kylian Mbappé, is_goal: true, stage: Final }
+
+  - query: "Richarlison acrobatic finish"
+    relevant: { player: Richarlison, technique: [Volley, Half Volley, Overhead Kick] }

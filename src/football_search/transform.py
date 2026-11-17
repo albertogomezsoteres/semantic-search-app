@@ -46,6 +46,19 @@ GAME_STATE_PHRASES = {
     "penalty_shootout": "penalty shootout",
 }
 
+# The same phases as full clauses, for "It happened ...".
+WHEN_PHRASES = {
+    "early": "early in the first half",
+    "first_half": "in the first half",
+    "first_half_stoppage": "in first-half stoppage time",
+    "second_half": "in the second half",
+    "late": "late in the second half",
+    "stoppage_time": "in second-half stoppage time",
+    "extra_time": "in extra time",
+    "late_extra_time": "late in extra time",
+    "penalty_shootout": "in the penalty shootout",
+}
+
 TECHNIQUE_NOUNS = {
     "Normal": "shot",
     "Volley": "volley",
@@ -263,7 +276,33 @@ def render_fluent(row: dict[str, Any]) -> str:
             f"In the {_ordinal(row['minute'])} minute ({timing}), "
             f"{score_phrase(row['team'], row['opponent'], row['team_score'], row['opp_score'])}."
         )
+    parts += describe_action(row)
+    if row["is_goal"] and not row["is_shootout"]:
+        parts.append(
+            f"It made the score {row['team_score'] + 1}-{row['opp_score']} "
+            f"to {row['team']}, the {row['goal_context']}."
+        )
+    parts.append(f"Expected goals (xG) {row['xg']:.2f}, a {row['xg_band']}.")
+    return " ".join(parts)
 
+
+def render_moment(row: dict[str, Any]) -> str:
+    """Only what happened on the pitch: no match header, minute, or score numbers.
+
+    Every shot in a match shares the same header, which made those shots look alike
+    to the embedding model. This version keeps the text about the action itself.
+    """
+    parts = describe_action(row)
+    parts.append(f"It happened {WHEN_PHRASES[row['game_state']]}.")
+    if row["is_goal"] and not row["is_shootout"]:
+        parts.append(f"It was the {row['goal_context']}.")
+    parts.append(f"It was a {row['xg_band']}.")
+    return " ".join(parts)
+
+
+def describe_action(row: dict[str, Any]) -> list[str]:
+    """Sentences describing the shot, its set-up, and the move it came from."""
+    parts = []
     leads, tail = OUTCOME_PHRASES[row["outcome"]]
     sentence = (
         f"{row['player']} ({row['team']}) {_pick(leads, row['id'])} {describe_strike(row)} "
@@ -295,14 +334,7 @@ def render_fluent(row: dict[str, Any]) -> str:
 
     if row["shot_type"] == "Open Play" and row["play_pattern"] in PLAY_PATTERN_PHRASES:
         parts.append(PLAY_PATTERN_PHRASES[row["play_pattern"]])
-
-    if row["is_goal"] and not row["is_shootout"]:
-        parts.append(
-            f"It made the score {row['team_score'] + 1}-{row['opp_score']} "
-            f"to {row['team']}, the {row['goal_context']}."
-        )
-    parts.append(f"Expected goals (xG) {row['xg']:.2f}, a {row['xg_band']}.")
-    return " ".join(parts)
+    return parts
 
 
 def render_terse(row: dict[str, Any]) -> str:
@@ -483,6 +515,7 @@ def build_tables(cfg: Config) -> tuple[pd.DataFrame, pd.DataFrame]:
 
     shots = pd.DataFrame(shot_rows).drop(columns="_clock")
     shots["text_fluent"] = [render_fluent(r) for r in shot_rows]
+    shots["text_moment"] = [render_moment(r) for r in shot_rows]
     shots["text_terse"] = [render_terse(r) for r in shot_rows]
     shots = shots.sort_values(["match_date", "match_id", "period", "minute", "second"])
     return shots.reset_index(drop=True), pd.DataFrame(match_rows)

@@ -1,12 +1,13 @@
 import pandas as pd
 
-from football_search.transform import match_context, render_fluent, render_terse
+from football_search.transform import match_context, render_fluent, render_moment, render_terse
 from football_search.validate import run_checks, score_mismatches
 
 
 def tables(shot_rows, match, home_own_goals=1, away_own_goals=0):
     shots = pd.DataFrame(shot_rows).drop(columns="_clock")
     shots["text_fluent"] = [render_fluent(r) for r in shot_rows]
+    shots["text_moment"] = [render_moment(r) for r in shot_rows]
     shots["text_terse"] = [render_terse(r) for r in shot_rows]
     matches = pd.DataFrame(
         [
